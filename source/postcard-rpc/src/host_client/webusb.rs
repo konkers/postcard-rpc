@@ -141,15 +141,11 @@ impl WebUsbWire {
 impl WireTx for WebUsbWire {
     type Error = Error;
 
-    async fn send(&mut self, mut data: Vec<u8>) -> Result<(), Self::Error> {
+    async fn send(&mut self, data: Vec<u8>) -> Result<(), Self::Error> {
         tracing::trace!("send…");
         // TODO for reasons unknown, web-sys wants mutable access to the send buffer.
         // tracking issue: https://github.com/rustwasm/wasm-bindgen/issues/3963
-        JsFuture::from(
-            self.device
-                .transfer_out_with_u8_array(self.ep_out, &mut data),
-        )
-        .await?;
+        JsFuture::from(self.device.transfer_out_with_u8_array(self.ep_out, &data.as_slice().into())?).await?;
         Ok(())
     }
 }
