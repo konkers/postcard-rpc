@@ -126,6 +126,7 @@ impl WebUsbWire {
         };
         JsFuture::from(device.open()).await?;
         tracing::info!("deveie openc, claiming interface {interface}");
+        JsFuture::from(device.select_configuration(1)).await?;
         JsFuture::from(device.claim_interface(interface)).await?;
         info!("done");
 
